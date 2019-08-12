@@ -1,3 +1,8 @@
+#![allow(dead_code)]
+
+mod random;
+mod advent;
+
 fn main() {
-    println!("Hello, world!");
+    advent::day1::main();
 }
