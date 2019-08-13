@@ -8,7 +8,9 @@ pub fn main() {
     totals.insert(2, 0);
     totals.insert(3, 0);
     for line in lines {
+        // count num of each char
         let char_counts = line.chars().group_by(|c| c);
+        // count num of occurances of each count
         let line_totals = char_counts.iter().group_by(|(_k, v)| *v);
 
         for (k, v) in totals.iter_mut() {
@@ -17,9 +19,13 @@ pub fn main() {
             }
         }
     }
-    for (k, v) in totals {
+    for (k, v) in totals.iter() {
         println!("{}: {}", k, v);
     }
+    println!(
+        "Checksum: {}",
+        totals.get(&2).unwrap() * totals.get(&3).unwrap()
+    )
 }
 
 trait GroupBy<T, I>
