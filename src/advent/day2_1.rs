@@ -1,7 +1,8 @@
 use std::collections::HashMap;
+use super::file;
 
-pub fn main() {
-    let file = file_read("data/2.txt");
+pub(crate) fn main() {
+    let file = file::file_read("data/2.txt");
     let lines = file.lines();
 
     let mut totals = HashMap::new();
@@ -14,8 +15,8 @@ pub fn main() {
         let line_totals = char_counts.iter().group_by(|(_k, v)| *v);
 
         for (k, v) in totals.iter_mut() {
-            if let Some(i) = line_totals.get(k) {
-                *v += *i;
+            if line_totals.contains_key(k) {
+                *v += 1;
             }
         }
     }
@@ -32,7 +33,7 @@ trait GroupBy<T, I>
 where
     I: Iterator<Item = T>,
 {
-    fn group_by<F, K>(&mut self, func: F) -> HashMap<K, u64>
+    fn group_by<F, K>(self, func: F) -> HashMap<K, u64>
     where
         F: Fn(T) -> K,
         K: std::cmp::Eq,
@@ -43,7 +44,7 @@ impl<T, I> GroupBy<T, I> for I
 where
     I: Iterator<Item = T>,
 {
-    fn group_by<F, K>(&mut self, func: F) -> HashMap<K, u64>
+    fn group_by<F, K>(self, func: F) -> HashMap<K, u64>
     where
         F: Fn(T) -> K,
         K: std::cmp::Eq,
@@ -60,47 +61,5 @@ where
         }
 
         return counts;
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-fn file_read(f: &str) -> String {
-    use std::error::Error;
-    use std::fs::File;
-    use std::io::prelude::*;
-    use std::path::Path;
-
-    let path = Path::new(f);
-    let display = path.display();
-
-    // Open the path in read-only mode, returns `io::Result<File>`
-    let mut file = match File::open(&path) {
-        // The `description` method of `io::Error` returns a string that
-        // describes the error
-        Err(why) => panic!("couldn't open {}: {}", display, why.description()),
-        Ok(file) => file,
-    };
-
-    // Read the file contents into a string, returns `io::Result<usize>`
-    let mut s = String::new();
-    match file.read_to_string(&mut s) {
-        Err(why) => panic!("couldn't read {}: {}", display, why.description()),
-        Ok(_) => s,
     }
 }
