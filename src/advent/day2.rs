@@ -3,13 +3,22 @@ use std::collections::HashMap;
 pub fn main() {
     let file = file_read("data/2.txt");
     let lines = file.lines();
-    for line in lines {
-        let counts = line.chars().group_by(|c| c);
-        let totals = counts.values().map(|i| *i).group_by(|c| c);
 
-        for (k, v) in totals {
-            println!("{}: {}", k, v);
+    let mut totals = HashMap::new();
+    totals.insert(2, 0);
+    totals.insert(3, 0);
+    for line in lines {
+        let char_counts = line.chars().group_by(|c| c);
+        let line_totals = char_counts.iter().group_by(|(_k, v)| *v);
+
+        for (k, v) in totals.iter_mut() {
+            if let Some(i) = line_totals.get(k) {
+                *v += *i;
+            }
         }
+    }
+    for (k, v) in totals {
+        println!("{}: {}", k, v);
     }
 }
 
@@ -18,19 +27,21 @@ where
     I: Iterator<Item = T>,
 {
     fn group_by<F, K>(&mut self, func: F) -> HashMap<K, u64>
-    where F: Fn(T) -> K,
-    K: std::cmp::Eq,
-    K: std::hash::Hash;
+    where
+        F: Fn(T) -> K,
+        K: std::cmp::Eq,
+        K: std::hash::Hash;
 }
 
 impl<T, I> GroupBy<T, I> for I
 where
     I: Iterator<Item = T>,
 {
-    fn group_by<F, K>(&mut self, func: F) -> HashMap<K, u64> 
-    where F: Fn(T) -> K,
-    K: std::cmp::Eq,
-    K: std::hash::Hash,
+    fn group_by<F, K>(&mut self, func: F) -> HashMap<K, u64>
+    where
+        F: Fn(T) -> K,
+        K: std::cmp::Eq,
+        K: std::hash::Hash,
     {
         let mut counts = HashMap::<K, u64>::new();
         for val in self {
@@ -45,6 +56,23 @@ where
         return counts;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 fn file_read(f: &str) -> String {
     use std::error::Error;
