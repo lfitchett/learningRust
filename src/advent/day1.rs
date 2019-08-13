@@ -1,29 +1,27 @@
-pub mod day1 {
-    use std::collections::HashSet;
+use std::collections::HashSet;
 
-    pub fn main() {
-        let mut sum = 0;
-        let mut freq = HashSet::new();
+pub fn main() {
+    let mut sum = 0;
+    let mut freq = HashSet::new();
 
-        loop {
-            let file = super::file_read("data/1.txt");
-            let lines = file.split("\n");
-            for line in lines {
-                if !freq.insert(sum) {
-                    println!("{}", sum);
-                    return;
-                }
-                
-                let sign = if line[0..1] == *"+" { 1 } else { -1 };
-
-                let temp = &line[1..line.chars().count()].to_string();
-                match temp.parse::<i64>() {
-                    Ok(num) => sum += num * sign,
-                    Err(e) => println!("{}", e),
-                }
-
+    loop {
+        let file = file_read("data/1.txt");   
+        let lines = file.lines();
+        for line in lines {
+            if !freq.insert(sum) {
                 println!("{}", sum);
+                return;
             }
+
+            let sign = if line[0..1] == *"+" { 1 } else { -1 };
+
+            let temp = &line[1..line.chars().count()].to_string();
+            match temp.parse::<i64>() {
+                Ok(num) => sum += num * sign,
+                Err(e) => println!("{}", e),
+            }
+
+            println!("{}", sum);
         }
     }
 }
