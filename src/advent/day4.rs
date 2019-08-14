@@ -1,6 +1,8 @@
 extern crate chrono;
+use crate::advent::day4::chrono::Timelike;
 use chrono::NaiveDateTime;
 use std::collections::HashMap;
+use std::iter::FromIterator;
 
 use super::file;
 
@@ -30,6 +32,9 @@ pub(crate) fn main() {
     let mut messages = parse_lines(lines);
     messages.sort_by_key(|m| m.timestamp);
     let records = parse_messages(messages);
+    let most_slept_guard = get_most_slept(&records);
+    let most_common_minute = get_most_common_minute(records.get(&most_slept_guard).unwrap());
+    println!("{}, {}, {}", most_slept_guard, most_common_minute, most_slept_guard * most_common_minute as u64);
 }
 
 fn parse_lines(lines: std::str::Lines<'_>) -> Vec<Message> {
@@ -97,4 +102,66 @@ fn parse_messages(messages: Vec<Message>) -> HashMap<u64, Vec<Record>> {
     }
 
     return guard_records;
+}
+
+fn get_most_slept(guard_records: &HashMap<u64, Vec<Record>>) -> u64 {
+    *guard_records
+        .iter()
+        .max_by_key(|(_id, records)| (**records).iter().map(|r| r.duration).sum::<i64>())
+        .unwrap()
+        .0
+}
+
+fn get_most_common_minute(records: &Vec<Record>) -> u32 {
+    *records
+        .iter()
+        .map(|r| {
+            if r.sleep_start < r.sleep_end {
+                Vec::from_iter(r.sleep_start.minute()..r.sleep_end.minute())
+            } else {
+                Vec::from_iter((0..r.sleep_start.minute() + 1).chain(r.sleep_end.minute()..60))
+            }
+        })
+        .flatten()
+        .group_by(|m| m)
+        .iter()
+        .max_by_key(|(_k, v)| **v)
+        .unwrap()
+        .0
+}
+
+/* Move to seperate file */
+trait GroupBy<T, I>
+where
+    I: Iterator<Item = T>,
+{
+    fn group_by<F, K>(self, func: F) -> HashMap<K, u64>
+    where
+        F: Fn(T) -> K,
+        K: std::cmp::Eq,
+        K: std::hash::Hash;
+}
+
+impl<T, I> GroupBy<T, I> for I
+where
+    I: Iterator<Item = T>,
+{
+    fn group_by<F, K>(self, func: F) -> HashMap<K, u64>
+    where
+        F: Fn(T) -> K,
+        K: std::cmp::Eq,
+        K: std::hash::Hash,
+    {
+        let mut counts = HashMap::<K, u64>::new();
+        for val in self {
+            let key = func(val);
+            if let Some(i) = counts.get_mut(&key) {
+                *i += 1;
+            } else {
+                counts.insert(key, 1);
+            }
+        }
+
+        return counts;
+    }
 }
