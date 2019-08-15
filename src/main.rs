@@ -4,5 +4,5 @@ mod random;
 mod advent;
 
 fn main() {
-    advent::day4::main();
+    advent::day5::main();
 }
