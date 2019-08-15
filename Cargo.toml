@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 ndarray = "0.12.1"
 chrono = "0.4.7"
+linked-list = "0.0.3"
