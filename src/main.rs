@@ -1,8 +1,9 @@
 #![allow(dead_code)]
 
-mod random;
 mod advent;
+mod random;
+mod future;
 
 fn main() {
-    advent::day6::main();
+    future::test_main();
 }
