@@ -1,40 +1,50 @@
-extern crate futures;
-
-use std::{thread, time};
-
-use futures::future;
-use futures::future::Map;
-use futures::prelude::*;
+use chrono::*;
+use std::*;
+use sysinfo::*;
 
 pub fn test_main() {
-    println!("Start");
+    let mut system = sysinfo::System::new();
 
-    let a = future::ok::<i32, i32>(1);
-    let b = future::ok::<i32, i32>(5);
+    // First we update all information of our system struct.
+    system.refresh_all();
 
-    let x = pause(a).and_then(|x| {future::ok(x + 5)});
-    let y = pause(b);
+    // // Now let's print every process' id and name:
+    // for (pid, proc_) in system.get_process_list() {
+    //     println!("{}:{} => status: {:?}", pid, proc_.name, proc_.status);
+    // }
 
-    println!("after pause", );
+    // Then let's print the temperature of the different components:
+    for component in system.get_components_list() {
+        println!("{:?}", component);
+    }
 
-    let xy = x.join(y);
+    // And then all disks' information:
+    for disk in system.get_disks() {
+        println!("{:?}", disk);
+    }
 
-    if let Ok((xval, yval)) = xy.wait() {
-        println!("x: {}, y: {}", xval, yval);
+    // And finally the RAM and SWAP information:
+    println!("total memory: {} kB", system.get_total_memory());
+    println!("used memory : {} kB", system.get_used_memory());
+    println!("total swap  : {} kB", system.get_total_swap());
+    println!("used swap   : {} kB", system.get_used_swap());
+
+    system.refresh_all();
+    system.refresh_all();
+    system.refresh_all();
+
+
+    for processor in system.get_processor_list() {
+        println!("Processor {} usage: {}", processor.get_name(), processor.get_cpu_usage());
     }
 }
 
-fn pause<F>(future: F) -> Map<F, fn(i32) -> i32>
-where
-    F: Future<Item = i32>,
-{
-    fn add(a: i32) -> i32 {
-        println!("Waiting {} seconds.", a);
+//     use sha2::{Sha256, Digest};
+//     use std::io;
 
-        // let test = future::ok(1);
-        thread::sleep(time::Duration::from_millis(a as u64));
-        println!("Waited {} seconds.", a);
-        a + 10
-    }
-    future.map(add)
-}
+// fn hash_file(path: &str) -> String {
+//         let mut file = File::open(path).unwrap();
+//         let mut hasher = Sha256::new();
+//         io::copy(&mut file, &mut hasher).unwrap();
+//         hasher.result().into_iter().map(|c| format!("{:02x?}", c)).collect()
+//     }
