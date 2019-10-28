@@ -1,9 +1,9 @@
 #![allow(dead_code)]
 
 mod advent;
-mod random;
 mod future;
+mod random;
 
 fn main() {
-    future::test_main();
+    println!("Test!");
 }
