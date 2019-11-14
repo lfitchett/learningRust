@@ -16,5 +16,4 @@ time = "0.1.42"
 byte-unit = "3.0.3"
 libc = "0.2"
 uptime_lib = "0.1.0"
-
-sysinfo = { git = "https://github.com/lfitchett/sysinfo.git" }
+sysinfo = "0.9.6"

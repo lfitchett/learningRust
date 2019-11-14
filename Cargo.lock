@@ -264,7 +264,7 @@ dependencies = [
  "linked-list 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ndarray 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "parse_duration 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "sysinfo 0.9.5 (git+https://github.com/lfitchett/sysinfo.git)",
+ "sysinfo 0.9.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)",
  "uptime_lib 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -345,8 +345,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "sysinfo"
-version = "0.9.5"
-source = "git+https://github.com/lfitchett/sysinfo.git#b6c982381dd01681b678ac63bffe5a5ca72f582f"
+version = "0.9.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cfg-if 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
  "doc-comment 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -455,7 +455,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum scopeguard 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)" = "b42e15e59b18a828bbf5c58ea01debb36b9b096346de35d941dcb89009f24a0d"
 "checksum semver 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)" = "1d7eb9ef2c18661902cc47e535f9bc51b78acd254da71d375c2f6720d9a40403"
 "checksum semver-parser 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
-"checksum sysinfo 0.9.5 (git+https://github.com/lfitchett/sysinfo.git)" = "<none>"
+"checksum sysinfo 0.9.6 (registry+https://github.com/rust-lang/crates.io-index)" = "6f4b2468c629cffba39c0a4425849ab3cdb03d9dfacba69684609aea04d08ff9"
 "checksum thread_local 0.3.6 (registry+https://github.com/rust-lang/crates.io-index)" = "c6b53e329000edc2b34dbe8545fd20e55a333362d0a321909685a19bd28c3f1b"
 "checksum time 0.1.42 (registry+https://github.com/rust-lang/crates.io-index)" = "db8dcfca086c1143c9270ac42a2bbd8a7ee477b78ac8e45b19abfb0cbede4b6f"
 "checksum uptime_lib 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "074e6007f94403a8fb60a4cc2b0c50d4f105b01cc39c47755b7630ecc25ccd0e"
