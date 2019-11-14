@@ -1,30 +1,19 @@
 use byte_unit::*;
 use chrono::*;
 use std::convert::*;
+use std::time::*;
 use std::*;
 use sysinfo::*;
 
 pub fn test_main() {
     println!("{:#?}", SystemInfo::new());
-    println!("My pid is {}", process::id());
-
-    let mut system = sysinfo::System::new();
-
-    // First we update all information of our system struct.
-    system.refresh_all();
-
-    // // Now let's print every process' id and name:
-    // for (pid, proc_) in system.get_process_list() {
-    //     println!("{}:{} => status: {:?}", pid, proc_.name(), proc_.status());
-    // }
-
-    let id: usize = process::id().try_into().unwrap();
-    let pro = &system.get_process_list()[&id];
-    println!("My pro is {:#?}", pro);
 }
 
 #[derive(Clone, Debug, Default)]
 struct SystemInfo {
+    host_uptime: i64,
+    process_uptime: u64,
+
     used_ram: String,
     total_ram: String,
     used_swap: String,
@@ -38,7 +27,17 @@ impl SystemInfo {
         {
             let mut system = sysinfo::System::new();
             system.refresh_all();
+
+            let start_time = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs()
+                - system.get_process_list()[&process::id().try_into().unwrap()].start_time();
+
             SystemInfo {
+                host_uptime: uptime_lib::get().unwrap().num_seconds(),
+                process_uptime: start_time,
+
                 total_ram: pretty_kbyte(system.get_total_memory()),
                 used_ram: pretty_kbyte(system.get_used_memory()),
                 total_swap: pretty_kbyte(system.get_total_swap()),
