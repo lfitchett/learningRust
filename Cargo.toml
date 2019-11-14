@@ -13,10 +13,8 @@ linked-list = "0.0.3"
 futures = "0.1"
 parse_duration = "2.0.1"
 time = "0.1.42"
-sysinfo = "0.9.5"
-serde = "1.0"
-serde_derive = "1.0"
-serde_json = "1.0"
-number_prefix = "0.3"
 byte-unit = "3.0.3"
+libc = "0.2"
+uptime_lib = "0.1.0"
 
+sysinfo = { git = "https://github.com/lfitchett/sysinfo.git" }

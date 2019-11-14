@@ -1,34 +1,97 @@
 use byte_unit::*;
 use chrono::*;
-use number_prefix::*;
-use serde_json;
-use std::process::Command;
+use std::convert::*;
 use std::*;
-use sysinfo::{DiskExt, SystemExt};
+use sysinfo::*;
 
 pub fn test_main() {
-    println!("{}", Utc::now().format("%F %T").to_string());
-    let since = Utc::now();
+    println!("{:#?}", SystemInfo::new());
+    println!("My pid is {}", process::id());
 
-    let inspect = Command::new("Get-WinEvent")
-        .args(&[
-            "-ea",
-            "SilentlyContinue",
-            "-FilterHashtable",
-            &format!(
-                "@{{ProviderName='iotedged';LogName='application';StartTime={}}}",
-                since
-            ),
-            "Select",
-            "TimeCreated",
-            "Message",
-            "Sort-Object",
-            "@{Expression='TimeCreated';Descending=$false}",
-            "Format-Table",
-            "-AutoSize",
-            "-Wrap",
-        ])
-        .output().unwrap();
+    let mut system = sysinfo::System::new();
 
+    // First we update all information of our system struct.
+    system.refresh_all();
 
+    // // Now let's print every process' id and name:
+    // for (pid, proc_) in system.get_process_list() {
+    //     println!("{}:{} => status: {:?}", pid, proc_.name(), proc_.status());
+    // }
+
+    let id: usize = process::id().try_into().unwrap();
+    let pro = &system.get_process_list()[&id];
+    println!("My pro is {:#?}", pro);
+}
+
+#[derive(Clone, Debug, Default)]
+struct SystemInfo {
+    used_ram: String,
+    total_ram: String,
+    used_swap: String,
+    total_swap: String,
+
+    disks: Vec<DiskInfo>,
+}
+
+impl SystemInfo {
+    fn new() -> Self {
+        {
+            let mut system = sysinfo::System::new();
+            system.refresh_all();
+            SystemInfo {
+                total_ram: pretty_kbyte(system.get_total_memory()),
+                used_ram: pretty_kbyte(system.get_used_memory()),
+                total_swap: pretty_kbyte(system.get_total_swap()),
+                used_swap: pretty_kbyte(system.get_used_swap()),
+
+                disks: system.get_disks().iter().map(DiskInfo::new).collect(),
+            }
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default)]
+struct DiskInfo {
+    name: String,
+    percent_free: String,
+    available_space: String,
+    total_space: String,
+    file_system: String,
+    file_type: String,
+}
+
+impl DiskInfo {
+    fn new<T>(disk: &T) -> Self
+    where
+        T: DiskExt,
+    {
+        let available_space = disk.get_available_space();
+        let total_space = disk.get_total_space();
+        #[allow(clippy::cast_precision_loss)]
+        let percent_free = format!(
+            "{:.1}%",
+            available_space as f64 / total_space as f64 * 100.0
+        );
+
+        DiskInfo {
+            name: disk.get_name().to_string_lossy().into_owned(),
+            percent_free,
+            available_space: Byte::from_bytes(u128::from(available_space))
+                .get_appropriate_unit(true)
+                .format(2),
+            total_space: Byte::from_bytes(u128::from(total_space))
+                .get_appropriate_unit(true)
+                .format(2),
+            file_system: String::from_utf8_lossy(disk.get_file_system()).into_owned(),
+            file_type: format!("{:?}", disk.get_type()),
+        }
+    }
+}
+
+fn pretty_kbyte(bytes: u64) -> String {
+    #[allow(clippy::cast_precision_loss)]
+    match Byte::from_unit(bytes as f64, ByteUnit::KiB) {
+        Ok(b) => b.get_appropriate_unit(true).format(2),
+        Err(err) => format!("could not parse bytes value: {:?}", err),
+    }
 }
