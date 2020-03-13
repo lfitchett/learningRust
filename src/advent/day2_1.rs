@@ -60,6 +60,6 @@ where
             }
         }
 
-        return counts;
+        counts
     }
 }

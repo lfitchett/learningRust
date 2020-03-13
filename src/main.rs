@@ -1,8 +1,12 @@
 #![allow(dead_code)]
+#![allow(unused_imports)]
 
-mod random;
 mod advent;
+mod future;
+mod random;
+use std::path::{Path, PathBuf};
+
 
 fn main() {
-    advent::day4::main();
+    future::test_main();
 }
